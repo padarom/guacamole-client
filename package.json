@@ -1,6 +1,6 @@
 {
   "name": "guacamole-common-js",
-  "version": "1.1.0-b",
+  "version": "1.2.0",
   "description": "The Guacamole javascript client",
   "main": "dist/guacamole-common.js",
   "scripts": {
