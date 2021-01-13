@@ -159,3 +159,36 @@ if [ -f extensions/guacamole-auth-duo/target/*.tar.gz ]; then
         --strip-components=1                               \
         "*.jar"
 fi
+
+#
+# Copy header auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-header/target/guacamole-auth-header*.jar ]; then
+    mkdir -p "$DESTINATION/header"
+    cp extensions/guacamole-auth-header/target/guacamole-auth-header*.jar "$DESTINATION/header"
+fi
+
+#
+# Copy CAS auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-cas/target/*.tar.gz ]; then
+    mkdir -p "$DESTINATION/cas"
+    tar -xzf extensions/guacamole-auth-cas/target/*.tar.gz  \
+    -C "$DESTINATION/cas/"                                  \
+    --wildcards                                             \
+    --no-anchored                                           \
+    --no-wildcards-match-slash                              \
+    --strip-components=1                                    \
+    "*.jar"
+fi
+
+#
+# Copy json auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-json/target/guacamole-auth-json*.jar ]; then
+    mkdir -p "$DESTINATION/json"
+    cp extensions/guacamole-auth-json/target/guacamole-auth-json*.jar "$DESTINATION/json"
+fi

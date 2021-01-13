@@ -20,9 +20,7 @@
 package org.apache.guacamole.auth.cas;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import java.util.Arrays;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
@@ -33,6 +31,7 @@ import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.auth.cas.form.CASTicketField;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
 import org.apache.guacamole.auth.cas.user.CASAuthenticatedUser;
+import org.apache.guacamole.language.TranslatableMessage;
 
 /**
  * Service providing convenience functions for the CAS AuthenticationProvider
@@ -51,12 +50,6 @@ public class AuthenticationProviderService {
      */
     @Inject
     private TicketValidationService ticketService;
-
-    /**
-     * Provider for AuthenticatedUser objects.
-     */
-    @Inject
-    private Provider<CASAuthenticatedUser> authenticatedUserProvider;
 
     /**
      * Returns an AuthenticatedUser representing the user authenticated by the
@@ -81,13 +74,7 @@ public class AuthenticationProviderService {
         if (request != null) {
             String ticket = request.getParameter(CASTicketField.PARAMETER_NAME);
             if (ticket != null) {
-                Map<String, String> tokens = ticketService.validateTicket(ticket, credentials);
-                String username = credentials.getUsername();
-                if (username != null) {
-                    CASAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                    authenticatedUser.init(username, credentials, tokens);
-                    return authenticatedUser;
-                }
+                return ticketService.validateTicket(ticket, credentials);
             }
         }
 
@@ -99,7 +86,8 @@ public class AuthenticationProviderService {
                 // to the authorization page via JavaScript)
                 new CASTicketField(
                     confService.getAuthorizationEndpoint(),
-                    confService.getRedirectURI()
+                    confService.getRedirectURI(),
+                    new TranslatableMessage("LOGIN.INFO_CAS_REDIRECT_PENDING")
                 )
 
             }))

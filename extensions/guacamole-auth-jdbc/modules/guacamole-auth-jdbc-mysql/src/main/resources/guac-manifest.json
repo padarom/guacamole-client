@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.2.0",
+    "guacamoleVersion" : "1.3.0",
 
     "name"      : "MySQL Authentication",
     "namespace" : "guac-mysql",
@@ -19,12 +19,15 @@
     ],
 
     "translations" : [
+        "translations/ca.json",
         "translations/de.json",
         "translations/en.json",
         "translations/es.json",
         "translations/fr.json",
         "translations/ja.json",
-        "translations/ru.json"
+        "translations/pt.json",
+        "translations/ru.json",
+        "translations/zh.json"
     ]
 
 }

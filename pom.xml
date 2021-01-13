@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-client</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <name>guacamole-client</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -53,9 +53,11 @@
         <module>extensions/guacamole-auth-duo</module>
         <module>extensions/guacamole-auth-header</module>
         <module>extensions/guacamole-auth-jdbc</module>
+        <module>extensions/guacamole-auth-json</module>
         <module>extensions/guacamole-auth-ldap</module>
         <module>extensions/guacamole-auth-openid</module>
         <module>extensions/guacamole-auth-quickconnect</module>
+        <module>extensions/guacamole-auth-saml</module>
         <module>extensions/guacamole-auth-totp</module>
 
         <!-- Example web applications using the Guacamole APIs -->
