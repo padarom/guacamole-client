@@ -1,0 +1,51 @@
+name: Update upstream
+
+# Controls when the action will run. 
+on:
+  # Run this workflow once a week to see if there's an upstream Guacamole update
+  schedule:
+    - cron: '0 12 * * 1'
+  # Allows us to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # The workflow merges upstream master and compares the local package version to the
+  # upstream Guacamole javascript version
+  check-update:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Merge upstream
+        run: |
+          git remote add upstream https://github.com/glyptodon/guacamole-client
+          git pull upstream master --no-edit
+
+      # Install some command line tools to allow us to easily compare upstream and
+      # local version
+      - name: Install faq + semver
+        run: |
+          wget -O faq https://github.com/jzelinskie/faq/releases/download/0.0.6/faq-linux-amd64
+          wget -O semver https://github.com/frenck/semver/releases/download/v0.3.0/semver_linux_amd64
+          chmod +x faq semver
+          
+      # Reads the upstream version from ./guacamole-common-js/pom.xml, and the
+      # local version from the ./package.json. For the local version an optional
+      # dash is cut off, since we use those for patch releases, which the semver
+      # tool doesn't recognize correctly.
+      #
+      # We then run the semver tool to figure out if upstream is newer than local
+      - name: Install faq to parse JSON and XML
+        run: |
+          UPSTREAM=$(./faq '.project.version' guacamole-common-js/pom.xml -crojson)
+          LOCAL=$(./faq '.version' package.json -cr | cut -f1 -d"-")
+          ./semver $UPSTREAM ">$LOCAL"
+
+      - name: Create pull request
+        if: success()
+        run:
+          echo "UPDATED"
+        
