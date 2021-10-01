@@ -28,7 +28,17 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
-    <!-- Guice -->
+    <!-- Request that the browser always revalidate its cached copy of index.html -->
+    <filter>
+        <filter-name>cacheRevalidationFilter</filter-name>
+        <filter-class>org.apache.guacamole.CacheRevalidationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>cacheRevalidationFilter</filter-name>
+        <url-pattern>/index.html</url-pattern>
+    </filter-mapping>
+
+    <!-- Route all requests through Guice -->
     <filter>
         <filter-name>guiceFilter</filter-name>
         <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
@@ -37,7 +47,6 @@
         <filter-name>guiceFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
     <listener>
         <listener-class>org.apache.guacamole.GuacamoleServletContextListener</listener-class>
     </listener>

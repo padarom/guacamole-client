@@ -115,6 +115,11 @@
                     "type"  : "TIMEZONE"
                 },
                 {
+                    "name"    : "enable-touch",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "console",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
@@ -141,6 +146,11 @@
                     "name"    : "color-depth",
                     "type"    : "ENUM",
                     "options" : [ "", "8", "16", "24", "32" ]
+                },
+                {
+                    "name"    : "force-lossless",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 },
                 {
                     "name"    : "resize-method",
@@ -348,6 +358,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"  : "recording-exclude-touch",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"  : "recording-include-keys",
                     "type"  : "BOOLEAN",
                     "options" : [ "true" ]
@@ -436,6 +451,10 @@
                 {
                     "name" : "wol-broadcast-addr",
                     "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-udp-port",
+                    "type" : "NUMERIC"
                 },
                 {
                     "name" : "wol-wait-time",

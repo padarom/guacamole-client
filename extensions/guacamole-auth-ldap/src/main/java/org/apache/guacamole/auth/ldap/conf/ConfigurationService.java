@@ -171,7 +171,7 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the DN that should be used when searching for the DNs of users
+     * Returns the login that should be used when searching for the DNs of users
      * attempting to authenticate. If no such search should be performed, null
      * is returned.
      *
@@ -183,7 +183,7 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public Dn getSearchBindDN() throws GuacamoleException {
+    public String getSearchBindDN() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN
         );
@@ -317,6 +317,26 @@ public class ConfigurationService {
     public ExprNode getUserSearchFilter() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USER_SEARCH_FILTER,
+            new PresenceNode("objectClass")
+        );
+    }
+
+    /**
+     * Returns the search filter that should be used when querying the
+     * LDAP server for Guacamole groups.  If no filter is specified,
+     * a default of "(objectClass=*)" is used.
+     *
+     * @return
+     *     The search filter that should be used when querying the
+     *     LDAP server for groups that are valid in Guacamole, or
+     *     "(objectClass=*)" if not specified.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public ExprNode getGroupSearchFilter() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_GROUP_SEARCH_FILTER,
             new PresenceNode("objectClass")
         );
     }

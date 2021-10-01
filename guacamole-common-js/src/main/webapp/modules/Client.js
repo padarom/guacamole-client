@@ -323,19 +323,33 @@ Guacamole.Client = function(tunnel) {
      * Sends a mouse event having the properties provided by the given mouse
      * state.
      * 
-     * @param {Guacamole.Mouse.State} mouseState The state of the mouse to send
-     *                                           in the mouse event.
+     * @param {Guacamole.Mouse.State} mouseState
+     *     The state of the mouse to send in the mouse event.
+     *
+     * @param {Boolean} [applyDisplayScale=false]
+     *     Whether the provided mouse state uses local display units, rather
+     *     than remote display units, and should be scaled to match the
+     *     {@link Guacamole.Display}.
      */
-    this.sendMouseState = function(mouseState) {
+    this.sendMouseState = function sendMouseState(mouseState, applyDisplayScale) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
+        var x = mouseState.x;
+        var y = mouseState.y;
+
+        // Translate for display units if requested
+        if (applyDisplayScale) {
+            x /= display.getScale();
+            y /= display.getScale();
+        }
+
         // Update client-side cursor
         display.moveCursor(
-            Math.floor(mouseState.x),
-            Math.floor(mouseState.y)
+            Math.floor(x),
+            Math.floor(y)
         );
 
         // Build mask
@@ -347,7 +361,40 @@ Guacamole.Client = function(tunnel) {
         if (mouseState.down)   buttonMask |= 16;
 
         // Send message
-        tunnel.sendMessage("mouse", Math.floor(mouseState.x), Math.floor(mouseState.y), buttonMask);
+        tunnel.sendMessage("mouse", Math.floor(x), Math.floor(y), buttonMask);
+    };
+
+    /**
+     * Sends a touch event having the properties provided by the given touch
+     * state.
+     *
+     * @param {Guacamole.Touch.State} touchState
+     *     The state of the touch contact to send in the touch event.
+     *
+     * @param {Boolean} [applyDisplayScale=false]
+     *     Whether the provided touch state uses local display units, rather
+     *     than remote display units, and should be scaled to match the
+     *     {@link Guacamole.Display}.
+     */
+    this.sendTouchState = function sendTouchState(touchState, applyDisplayScale) {
+
+        // Do not send requests if not connected
+        if (!isConnected())
+            return;
+
+        var x = touchState.x;
+        var y = touchState.y;
+
+        // Translate for display units if requested
+        if (applyDisplayScale) {
+            x /= display.getScale();
+            y /= display.getScale();
+        }
+
+        tunnel.sendMessage('touch', touchState.id, Math.floor(x), Math.floor(y),
+            Math.floor(touchState.radiusX), Math.floor(touchState.radiusY),
+            touchState.angle, touchState.force);
+
     };
 
     /**
@@ -359,7 +406,7 @@ Guacamole.Client = function(tunnel) {
      * instruction which creates the stream, such as a "clipboard", "file", or
      * "pipe" instruction.
      *
-     * @returns {Guacamole.OutputStream}
+     * @returns {!Guacamole.OutputStream}
      *     A new Guacamole.OutputStream with a newly-allocated index and
      *     associated with this Guacamole.Client.
      */
@@ -383,7 +430,7 @@ Guacamole.Client = function(tunnel) {
      *     The mimetype of the audio data that will be sent along the returned
      *     stream.
      *
-     * @return {Guacamole.OutputStream}
+     * @return {!Guacamole.OutputStream}
      *     The created audio stream.
      */
     this.createAudioStream = function(mimetype) {
@@ -402,7 +449,7 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {String} mimetype The mimetype of the file being sent.
      * @param {String} filename The filename of the file being sent.
-     * @return {Guacamole.OutputStream} The created file stream.
+     * @return {!Guacamole.OutputStream} The created file stream.
      */
     this.createFileStream = function(mimetype, filename) {
 
@@ -419,7 +466,7 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {String} mimetype The mimetype of the data being sent.
      * @param {String} name The name of the pipe.
-     * @return {Guacamole.OutputStream} The created file stream.
+     * @return {!Guacamole.OutputStream} The created file stream.
      */
     this.createPipeStream = function(mimetype, name) {
 
@@ -436,7 +483,7 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {String} mimetype The mimetype of the data being sent.
      * @param {String} name The name of the pipe.
-     * @return {Guacamole.OutputStream} The created file stream.
+     * @return {!Guacamole.OutputStream} The created file stream.
      */
     this.createClipboardStream = function(mimetype) {
 
@@ -488,7 +535,7 @@ Guacamole.Client = function(tunnel) {
      * @param {String} name
      *     The defined name of an output stream within the given object.
      *
-     * @returns {Guacamole.OutputStream}
+     * @returns {!Guacamole.OutputStream}
      *     An output stream which will write blobs to the named output stream
      *     of the given object.
      */
@@ -648,6 +695,20 @@ Guacamole.Client = function(tunnel) {
      *     used.
      */
     this.onvideo = null;
+
+    /**
+     * Fired when the remote client is explicitly declaring the level of
+     * multi-touch support provided by a particular display layer.
+     *
+     * @event
+     * @param {Guacamole.Display.VisibleLayer} layer
+     *     The layer whose multi-touch support level is being declared.
+     *
+     * @param {Number} touches
+     *     The maximum number of simultaneous touches supported by the given
+     *     layer, where 0 indicates that touch events are not supported at all.
+     */
+    this.onmultitouch = null;
 
     /**
      * Fired when the current value of a connection parameter is being exposed
@@ -825,6 +886,14 @@ Guacamole.Client = function(tunnel) {
 
         "miter-limit": function(layer, value) {
             display.setMiterLimit(layer, parseFloat(value));
+        },
+
+        "multi-touch" : function layerSupportsMultiTouch(layer, value) {
+
+            // Process "multi-touch" property only for true visible layers (not off-screen buffers)
+            if (guac_client.onmultitouch && layer instanceof Guacamole.Display.VisibleLayer)
+                guac_client.onmultitouch(layer, parseInt(value));
+
         }
 
     };

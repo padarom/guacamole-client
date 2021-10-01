@@ -52,6 +52,11 @@
                     "name"  : "color-depth",
                     "type"  : "ENUM",
                     "options" : [ "", "8", "16", "24", "32" ]
+                },
+                {
+                    "name"    : "force-lossless",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
@@ -216,6 +221,10 @@
                 {
                     "name" : "wol-broadcast-addr",
                     "type" : "TEXT"
+                },
+                {
+                    "name" : "wol-udp-port",
+                    "type" : "NUMERIC"
                 },
                 {
                     "name" : "wol-wait-time",

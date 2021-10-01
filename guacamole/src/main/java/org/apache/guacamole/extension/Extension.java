@@ -19,19 +19,19 @@
 
 package org.apache.guacamole.extension;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import org.apache.guacamole.net.event.listener.Listener;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -54,6 +54,11 @@ public class Extension {
      * Guacamole extension.
      */
     private static final String MANIFEST_NAME = "guac-manifest.json";
+
+    /**
+     * The extension .jar file.
+     */
+    private final File file;
 
     /**
      * The parsed manifest file of this extension, describing the location of
@@ -144,7 +149,7 @@ public class Extension {
             return Collections.<String, Resource>emptyMap();
 
         // Add classpath resource for each path provided
-        Map<String, Resource> resources = new HashMap<String, Resource>(paths.size());
+        Map<String, Resource> resources = new LinkedHashMap<>(paths.size());
         for (String path : paths)
             resources.put(path, new ClassPathResource(classLoader, mimetype, path));
 
@@ -173,7 +178,7 @@ public class Extension {
             return Collections.<String, Resource>emptyMap();
 
         // Add classpath resource for each path/mimetype pair provided
-        Map<String, Resource> resources = new HashMap<String, Resource>(resourceTypes.size());
+        Map<String, Resource> resources = new LinkedHashMap<>(resourceTypes.size());
         for (Map.Entry<String, String> resource : resourceTypes.entrySet()) {
 
             // Get path and mimetype from entry
@@ -357,6 +362,9 @@ public class Extension {
      */
     public Extension(final ClassLoader parent, final File file) throws GuacamoleException {
 
+        // Associate extension abstraction with original file
+        this.file = file;
+
         try {
 
             // Open extension
@@ -425,6 +433,16 @@ public class Extension {
             largeIcon = new ClassPathResource(classLoader, "image/png", manifest.getLargeIcon());
         else
             largeIcon = null;
+    }
+
+    /**
+     * Returns the .jar file containing this Guacamole extension.
+     *
+     * @return
+     *     The extension .jar file.
+     */
+    public File getFile() {
+        return file;
     }
 
     /**
