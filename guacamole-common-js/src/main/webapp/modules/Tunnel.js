@@ -963,7 +963,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
 
         // Connect socket
-        socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
+        socket = new WebSocket(tunnelURL + "?" + data, authentcationToken, "guacamole");
 
         socket.onopen = function(event) {
             reset_timeout();
