@@ -955,15 +955,16 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     };
 
-    this.connect = function(data) {
+    this.connect = function(data, headers = []) {
 
         reset_timeout();
 
         // Mark the tunnel as connecting
         tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
 
-        // Connect socket
-        socket = new WebSocket(tunnelURL + "?" + data, authentcationToken, "guacamole");
+        // Connect socket        
+        headers.push("guacamole");
+        socket = new WebSocket(tunnelURL + "?" + data, headers);
 
         socket.onopen = function(event) {
             reset_timeout();
