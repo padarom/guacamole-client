@@ -1631,14 +1631,16 @@ Guacamole.Client = function(tunnel) {
      *
      * @param data Arbitrary connection data to be sent to the underlying
      *             tunnel during the connection process.
+     * @param header Arbitrary connection header to be sent to the underlying
+     *             tunnel during the connection process in Subprotocols header in websocket tunnel.
      * @throws {Guacamole.Status} If an error occurs during connection.
      */
-    this.connect = function(data) {
+    this.connect = function(data, header) {
 
         setState(STATE_CONNECTING);
 
         try {
-            tunnel.connect(data);
+            tunnel.connect(data, header);
         }
         catch (status) {
             setState(STATE_IDLE);

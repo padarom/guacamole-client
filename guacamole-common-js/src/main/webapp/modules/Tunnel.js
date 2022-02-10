@@ -36,8 +36,9 @@ Guacamole.Tunnel = function() {
      * up to the tunnel implementation.
      * 
      * @param {String} data The data to send to the tunnel when connecting.
+     * @param {String} header The header to send to the websocket tunnel when connecting.
      */
-    this.connect = function(data) {};
+    this.connect = function(data, header) {};
     
     /**
      * Disconnect from the tunnel.
@@ -955,7 +956,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     };
 
-    this.connect = function(data, headers = []) {
+    this.connect = function(data, headers) {
 
         reset_timeout();
 
@@ -1105,6 +1106,13 @@ Guacamole.ChainedTunnel = function(tunnelChain) {
     var connect_data;
 
     /**
+    * Data passed in via connect(), to be used for
+    * wrapped calls to other tunnels' connect() functions.
+    * @private
+    */
+    var connect_header;
+
+    /**
      * Array of all tunnels passed to this ChainedTunnel through the
      * constructor arguments.
      * @private
@@ -1237,7 +1245,7 @@ Guacamole.ChainedTunnel = function(tunnelChain) {
         };
 
         // Attempt connection
-        tunnel.connect(connect_data);
+        tunnel.connect(connect_data, connect_header);
         
     }
 
@@ -1331,7 +1339,7 @@ Guacamole.StaticHTTPTunnel = function StaticHTTPTunnel(url, crossDomain, extraTu
         // Do nothing
     };
 
-    this.connect = function connect(data) {
+    this.connect = function connect(data, header) {
 
         // Ensure any existing connection is killed
         tunnel.disconnect();
