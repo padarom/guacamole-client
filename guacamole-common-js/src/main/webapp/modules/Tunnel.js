@@ -956,7 +956,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     };
 
-    this.connect = function(data, headers) {
+    this.connect = function(data, headers) {   
 
         reset_timeout();
 
