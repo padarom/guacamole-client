@@ -1,10 +1,27 @@
 {
   "name": "guacamole-common-js",
-  "version": "1.4.0-a",
+  "version": "1.4.0-b",
   "description": "The Guacamole javascript client",
-  "main": "dist/guacamole-common.js",
+  "type": "module",
+  "main": "dist/cjs/guacamole-common.js",
+  "module": "dist/esm/guacamole-common.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/guacamole-common.js",
+      "require": "./dist/cjs/guacamole-common.js"
+    }
+  },
   "scripts": {
-    "prepublishOnly": "gulp"
+    "build": "npm run build:esm && npm run build:cjs",
+    "build:esm:concat": "cat guacamole-common-js/src/main/webapp/modules/*.js > dist/esm/guacamole-common.js",
+    "build:esm:append": "echo 'export default Guacamole;' >> dist/esm/guacamole-common.js",
+    "build:esm:minify": "minify dist/esm/guacamole-common.js > dist/esm/guacamole-common.min.js",
+    "build:esm": "npm run build:esm:concat && npm run build:esm:append && npm run build:esm:minify",
+    "build:cjs:concat": "cat guacamole-common-js/src/main/webapp/modules/*.js > dist/cjs/guacamole-common.js",
+    "build:cjs:append": "echo 'module.exports = Guacamole;' >> dist/cjs/guacamole-common.js",
+    "build:cjs:minify": "minify dist/cjs/guacamole-common.js > dist/cjs/guacamole-common.min.js",
+    "build:cjs": "npm run build:cjs:concat && npm run build:cjs:append && npm run build:cjs:minify",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -26,17 +43,13 @@
     "ssh",
     "telnet"
   ],
-  "author": "Christopher Mühl <christopher@padarom.io>",
+  "author": "Christopher Mühl <christopher@muehl.dev>",
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://issues.apache.org/jira/browse/GUACAMOLE/"
   },
   "homepage": "https://github.com/padarom/guacamole-common-js#readme",
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-insert": "^0.5.0",
-    "gulp-uglify": "^3.0.0",
-    "gulp-rename": "^1.2.2"
+    "minify": "^9.2.0"
   }
 }
